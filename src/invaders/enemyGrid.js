@@ -1,17 +1,4 @@
-function loadImage(src) {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.src = src;
-    img.onload = () => resolve(img);
-    img.onerror = reject;
-  });
-}
-
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-class EnemyGrid {
+export class EnemyGrid {
   constructor(enemyImage) {
     this.enemyImage = enemyImage;
     this.enemyWidth = enemyImage.width / 4;
@@ -55,7 +42,7 @@ class EnemyGrid {
     this.checkUpdateDirection();
   }
 
-  render(ctx) {
+  render(canvas) {
     let x = this.xCurrent;
     let y = this.yCurrent;
 
@@ -65,7 +52,7 @@ class EnemyGrid {
     const offset = this.offset;
 
     for (let i = 0; i < this.enemies.length; i++) {
-      ctx.drawImage(this.enemyImage, x, y, width, height);
+      canvas.drawImage(this.enemyImage, x, y, width, height);
 
       if ((i + 1) % per_row === 0) {
         x = this.xCurrent;
@@ -76,26 +63,3 @@ class EnemyGrid {
     }
   }
 }
-
-async function main() {
-  const tickRate = 1000 / 60;
-  const canvas = document.querySelector('canvas');
-  const ctx = canvas.getContext('2d');
-  const enemyImage = await loadImage('assets/enemy.png');
-  const enemyGrid = new EnemyGrid(enemyImage);
-
-  let frameNumber = 0;
-
-  while (true) {
-    ctx.fillStyle = 'black';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    enemyGrid.tick(frameNumber);
-    enemyGrid.render(ctx);
-
-    await sleep(tickRate);
-    frameNumber += 1;
-  }
-}
-
-main();
