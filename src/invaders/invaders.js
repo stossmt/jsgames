@@ -1,5 +1,3 @@
-import { add } from './add.js';
-
 function loadImage(src) {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -80,8 +78,6 @@ class EnemyGrid {
 }
 
 async function main() {
-  console.log('Result: ', add(4, 3));
-
   const tickRate = 1000 / 60;
   const canvas = document.querySelector('canvas');
   const ctx = canvas.getContext('2d');
