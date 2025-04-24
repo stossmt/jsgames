@@ -1,65 +1,100 @@
+import { Enemy } from './enemy.js';
+
+function flipDirection(direction) {
+  return direction ? false : true;
+}
+
+function initEnemies(
+  canvas,
+  enemyImage,
+  enemyScaleFactor,
+  enemySpacing,
+  enemyMoveBy,
+  numberOfColumns,
+  numberOfRows
+) {
+  const enemyWidth = enemyImage.width / enemyScaleFactor;
+  const enemyHeight = enemyImage.height / enemyScaleFactor;
+
+  const hSpacing = enemyWidth + enemySpacing;
+  const vSpacing = enemyHeight + enemySpacing;
+
+  const totalGridWidth = numberOfColumns * hSpacing - enemySpacing;
+
+  const startX = canvas.getWidth() / 2 - totalGridWidth / 2;
+  const startY = canvas.getMinYPosition();
+
+  return Array.from({ length: numberOfColumns * numberOfRows }, (_, i) => {
+    const col = i % numberOfColumns;
+    const row = Math.floor(i / numberOfColumns);
+    const x = startX + col * hSpacing;
+    const y = startY + row * vSpacing;
+    return new Enemy(enemyImage, enemyMoveBy, x, y, enemyWidth, enemyHeight);
+  });
+}
+
 export class EnemyGrid {
-  constructor(enemyImage) {
-    this.enemyImage = enemyImage;
-    this.enemyWidth = enemyImage.width / 4;
-    this.enemyHeight = enemyImage.height / 4;
-    this.enemies = Array(48).fill(true);
-    this.enemiesPerRow = 12;
-    this.xCurrent = 10;
-    this.yCurrent = 10;
-    this.xMin = 10;
-    this.xMax = 300;
-    this.offset = 5;
-    this.headRight = true;
-    this.stepAmount = 2;
-    this.tickRate = 30;
-  }
-
-  checkUpdateDirection() {
-    const xLeft = this.xCurrent;
-    const xRight =
-      this.xCurrent + (this.enemyWidth + this.offset) * this.enemiesPerRow;
-
-    if (this.headRight && xRight >= this.xMax) {
-      this.headRight = false;
-    } else if (xLeft <= this.xMin) {
-      this.headRight = true;
-    }
+  constructor(
+    canvas,
+    enemyImage,
+    enemyScaleFactor,
+    enemySpacing,
+    enemyMoveBy,
+    tickRate,
+    numberOfColumns,
+    numberOfRows
+  ) {
+    this.canvas = canvas;
+    this.moveRight = true;
+    this.tickRate = tickRate;
+    this.enemies = initEnemies(
+      canvas,
+      enemyImage,
+      enemyScaleFactor,
+      enemySpacing,
+      enemyMoveBy,
+      numberOfColumns,
+      numberOfRows
+    );
   }
 
   shouldUpdate(frameNumber) {
     return frameNumber % this.tickRate === 0;
   }
 
+  hasFallenOffOfCanvas() {
+    const minX = this.canvas.getMinXPosition();
+    const maxX = this.canvas.getMaxXPosition();
+
+    const firstRowEnemy = this.enemies[0];
+    const lastRowEnemy = this.enemies[this.enemies.length - 1];
+
+    const isLeftCollision = firstRowEnemy.isCollision(
+      minX,
+      firstRowEnemy.getMinYPosition()
+    );
+    const isRightCollision = lastRowEnemy.isCollision(
+      maxX,
+      lastRowEnemy.getMinYPosition()
+    );
+
+    return isLeftCollision || isRightCollision;
+  }
+
   tick(frameNumber) {
     if (!this.shouldUpdate(frameNumber)) {
       return;
     }
+    if (this.hasFallenOffOfCanvas()) {
+      this.moveRight = flipDirection(this.moveRight);
+    }
 
-    this.headRight
-      ? (this.xCurrent += this.stepAmount)
-      : (this.xCurrent -= this.stepAmount);
-    this.checkUpdateDirection();
+    this.moveRight
+      ? this.enemies.forEach((enemy) => enemy.moveRight())
+      : this.enemies.forEach((enemy) => enemy.moveLeft());
   }
 
-  render(canvas) {
-    let x = this.xCurrent;
-    let y = this.yCurrent;
-
-    const width = this.enemyWidth;
-    const height = this.enemyHeight;
-    const per_row = this.enemiesPerRow;
-    const offset = this.offset;
-
-    for (let i = 0; i < this.enemies.length; i++) {
-      canvas.drawImage(this.enemyImage, x, y, width, height);
-
-      if ((i + 1) % per_row === 0) {
-        x = this.xCurrent;
-        y += height + offset;
-      } else {
-        x += width + offset;
-      }
-    }
+  render() {
+    this.enemies.forEach((enemy) => enemy.render(this.canvas));
   }
 }

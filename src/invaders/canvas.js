@@ -1,14 +1,38 @@
 export class Canvas {
-  constructor(canvas, backgroundColor = 'black') {
+  constructor(canvas, canvasPadding, canvasBackgroundColor) {
+    this.canvas = canvas;
     this.canvasCtx = canvas.getContext('2d');
-    this.width = canvas.width;
-    this.height = canvas.height;
-    this.backgroundColor = backgroundColor;
+    this.canvasPadding = canvasPadding;
+    this.canvasBackgroundColor = canvasBackgroundColor;
+  }
+
+  getMinYPosition() {
+    return 0 + this.canvasPadding;
+  }
+
+  getMaxYPosition() {
+    return this.getHeight() - this.canvasPadding;
+  }
+
+  getMinXPosition() {
+    return 0 + this.canvasPadding;
+  }
+
+  getMaxXPosition() {
+    return this.getWidth() - this.canvasPadding;
+  }
+
+  getWidth() {
+    return this.canvas.width;
+  }
+
+  getHeight() {
+    return this.canvas.height;
   }
 
   reset() {
-    this.canvasCtx.fillStyle = this.backgroundColor;
-    this.canvasCtx.fillRect(0, 0, this.width, this.height);
+    this.canvasCtx.fillStyle = this.canvasBackgroundColor;
+    this.canvasCtx.fillRect(0, 0, this.getWidth(), this.getHeight());
   }
 
   drawImage(src, x, y, width, height) {

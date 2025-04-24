@@ -5,8 +5,21 @@ import { Canvas } from './canvas.js';
 export class Game {
   constructor(resources, framesPerSecond = 60) {
     this.ticker = new Ticker(framesPerSecond);
-    this.enemyGrid = new EnemyGrid(resources.getEnemyImage());
-    this.canvas = new Canvas(resources.getCanvas());
+    this.canvas = new Canvas(
+      resources.getCanvas(),
+      resources.getCanvasPadding(),
+      resources.getCanvasBackgroundColor()
+    );
+    this.enemyGrid = new EnemyGrid(
+      this.canvas,
+      resources.getEnemyImage(),
+      resources.getEnemyScaleFactor(),
+      resources.getEnemySpacing(),
+      resources.getEnemyMoveBy(),
+      resources.getEnemyTickRate(),
+      resources.getEnemyNumberOfColumns(),
+      resources.getEnemyNumberOfRows()
+    );
   }
 
   async run() {

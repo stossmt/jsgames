@@ -3,7 +3,7 @@ import { Resources } from './resources.js';
 
 async function main() {
   const resources = await Resources.load();
-  const game = new Game(resources).run();
+  const game = new Game(resources);
 
   await game.run();
 }
