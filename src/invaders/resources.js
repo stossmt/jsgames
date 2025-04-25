@@ -11,7 +11,9 @@ export class Resources {
     enemyMoveBy,
     enemyTickRate,
     enemyNumberOfColumns,
-    enemyNumberOfRows
+    enemyNumberOfRows,
+    playerImage,
+    playerScaleFactor
   ) {
     this.canvas = canvas;
     this.canvasPadding = canvasPadding;
@@ -23,6 +25,8 @@ export class Resources {
     this.enemyTickRate = enemyTickRate;
     this.enemyNumberOfColumns = enemyNumberOfColumns;
     this.enemyNumberOfRows = enemyNumberOfRows;
+    this.playerImage = playerImage;
+    this.playerScaleFactor = playerScaleFactor;
   }
 
   static async load() {
@@ -30,15 +34,18 @@ export class Resources {
     const canvasBackgroundColor = 'black';
     const canvasQuerySelector = 'canvas';
     const enemyImageSource = 'assets/enemy.png';
+    const playerImageSource = 'assets/player.png';
     const enemyTickRate = 30;
     const enemyScaleFactor = 4;
     const enemySpacing = 5;
     const enemyMoveBy = 2;
     const enemyNumberOfColumns = 12;
     const enemyNumberOfRows = 4;
+    const playerScaleFactor = 4;
 
     const canvas = document.querySelector(canvasQuerySelector);
     const enemyImage = await loadImage(enemyImageSource);
+    const playerImage = await loadImage(playerImageSource);
 
     return new Resources(
       canvas,
@@ -50,7 +57,9 @@ export class Resources {
       enemyMoveBy,
       enemyTickRate,
       enemyNumberOfColumns,
-      enemyNumberOfRows
+      enemyNumberOfRows,
+      playerImage,
+      playerScaleFactor
     );
   }
 
@@ -92,5 +101,13 @@ export class Resources {
 
   getEnemyNumberOfRows() {
     return this.enemyNumberOfRows;
+  }
+
+  getPlayerImage() {
+    return this.playerImage;
+  }
+
+  getPlayerScaleFactor() {
+    return this.playerScaleFactor;
   }
 }
